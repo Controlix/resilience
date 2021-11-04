@@ -35,15 +35,20 @@ public class RssHungryEndpoint {
 
     private <T> T doWithRss(int numRss, Supplier<T> supplier) {
         log.info("Wait for {} rss", numRss);
-        Awaitility.await().atMost(30, TimeUnit.SECONDS).untilAtomic(rss, Matchers.lessThanOrEqualTo(MAX_RSS - numRss));
-        log.info("Acquire rss"); // (1)
-        int rssUsed = rss.addAndGet(numRss);
-        log.info("{} rss currently in use", rssUsed);
+        Awaitility.await().atMost(30, TimeUnit.SECONDS).until(() -> rssAcquired(numRss));
         slowDown(numRss);
         T result = supplier.get();
         log.info("Release rss");
         rss.addAndGet(-numRss);
         return result;
+    }
+
+    private boolean rssAcquired(int numRss) { // (1)
+        int rssUsed = rss.addAndGet(numRss);
+        log.info("{} rss currently in use", rssUsed);
+        if (rssUsed < MAX_RSS) return true;
+        rss.addAndGet(-numRss);
+        return false;
     }
 
     @GetMapping("/{id}")
