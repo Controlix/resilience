@@ -1,0 +1,12 @@
+scrape_configs:
+  - job_name: 'gateway'
+    metrics_path: '/actuator/prometheus'
+
+    # Override the global default and scrape targets from this job every 5 seconds.
+    scrape_interval: 5s
+
+    static_configs:
+         - targets: ['172.17.0.3:32350']
+           
+
+

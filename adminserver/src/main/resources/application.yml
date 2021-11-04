@@ -1,0 +1,16 @@
+spring:
+  cloud:
+    kubernetes:
+      discovery:
+        all-namespaces: true
+#        service-labels:
+#          spring-boot: true
+
+management:
+  endpoint:
+    health:
+      show-details: "always"
+  endpoints:
+    web:
+      exposure:
+        include: "*"
