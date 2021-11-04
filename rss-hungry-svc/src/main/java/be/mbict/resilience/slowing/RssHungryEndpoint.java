@@ -1,5 +1,6 @@
 package be.mbict.resilience.slowing;
 
+import io.github.resilience4j.bulkhead.annotation.Bulkhead;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +27,7 @@ public class RssHungryEndpoint {
     private transient AtomicInteger rss = new AtomicInteger(0);
 
     @GetMapping
+    @Bulkhead(name = "allStats")
     public List<MessageStats> allStats() {
         log.info("allStats called");
         return doWithRss(1, messageStatsRepository::findAll);
@@ -45,6 +47,7 @@ public class RssHungryEndpoint {
     }
 
     @GetMapping("/{id}")
+    @Bulkhead(name = "statsForMessage")
     public List<Integer> statsForMessage(@PathVariable("id") String id) {
         log.info("statsForMessage called with id '{}'", id);
         return doWithRss(5, () -> messageStatsRepository.findById(id));

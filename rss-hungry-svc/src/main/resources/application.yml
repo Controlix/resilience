@@ -6,3 +6,11 @@ management:
     web:
       exposure:
         include: "*"
+
+resilience4j:
+  bulkhead:
+    instances:
+      allStats:
+        maxConcurrentCalls: 10
+      statsForMessage:
+        maxConcurrentCalls: 2
